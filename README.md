@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Google Meet Scheduler
+
+This application allows users to schedule Google Meet meetings. Users can create instant meetings or schedule meetings for a specific date and time.
+
+## Features
+
+- Create instant Google Meet meetings
+- Schedule Google Meet meetings with a start and end time
+- View meeting details including meeting ID and URL
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- Google API credentials (Client ID and Client Secret)
 
 ## Getting Started
 
-First, run the development server:
+### Clone the Repository
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```sh
+git clone https://github.com/yourusername/google-meet-scheduler.git
+cd google-meet-scheduler
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Install Dependencies
+```sh
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Set Up Environment Variables
+Create a .env file in the root directory and add the following environment variables:
+```sh
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_aecret
+AUTH_SECRET=yourOauth_secret
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the Application
+```sh
+npm run dev
+```
 
-## Learn More
+Open your browser and navigate to http://localhost:3000 to view the application.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Usage
+Instant Meeting: Click on the "Start an instant Meeting" button to create an instant Google Meet meeting.
+Scheduled Meeting: Select the start date and time, and the end date and time, then click on the "Schedule a meeting" button to create a scheduled Google Meet meeting.
+View Meeting Details: After creating a meeting, the meeting details including the meeting ID and URL will be displayed.
