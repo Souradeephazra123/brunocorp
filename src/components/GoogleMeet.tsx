@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { toast, ToastContainer } from "react-toastify";
 
 const GoogleMeet = () => {
   const [meetingData, setMeetingData] = useState(null);
@@ -28,7 +29,6 @@ const GoogleMeet = () => {
     setLoadingstate(false);
   };
 
-
   return (
     <div className="pt-10 flex flex-col gap-5">
       <p className=" text-2xl font-bold">GoogleMeet</p>
@@ -41,7 +41,8 @@ const GoogleMeet = () => {
             }}
             className={`bg-blue-500 text-white px-4 py-2 rounded w-fit cursor-pointer hover:bg-blue-600 transition duration-200 ease-in-out flex gap-2 ${
               ldstate ? "opacity-50 cursor-not-allowed" : ""
-            }`}          >
+            }`}
+          >
             Start an instant Meeting
             {ldstate && <Spinner />}
           </button>
@@ -66,6 +67,7 @@ const GoogleMeet = () => {
           />
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
@@ -80,6 +82,12 @@ function Dt({ setSchedule, scheduledMeetingData }) {
   const handleSubmit = async (event) => {
     setLoading(true);
     event.preventDefault();
+
+    if (new Date(endDateTime) <= new Date(selectedDateTime)) {
+      toast.error("End date and time must be after start date and time.");
+      setLoading(false);
+      return;
+    }
     const formData = {
       startdateTime: selectedDateTime,
       endDateTime: endDateTime,
