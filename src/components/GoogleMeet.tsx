@@ -1,35 +1,22 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import CustomDatePicker from "./ui/date-picker";
-import CustomTimeField from "./ui/time-field";
-import DateTimePicker from "react-datetime-picker";
-import "react-datetime-picker/dist/DateTimePicker.css";
-import "react-calendar/dist/Calendar.css";
-import "react-clock/dist/Clock.css";
+import React, { useState } from "react";
+import Link from "next/link";
 
 const GoogleMeet = () => {
   const [meetingData, setMeetingData] = useState(null);
-  const [mydate, setMyDate] = useState(new Date());
-  // const [mytime, setMyTime] = useState(new Date().getHours());
-
-  useEffect(() => {
-    // console.log("mytime", mytime);
-    console.log("mydate", mydate);
-  }, []);
-
-  const { control, handleSubmit, watch } = useForm({ mode: "onChange" });
-  console.log("watch time", watch("date"));
-  console.log("watch time", watch("time"));
+  const [scheduleedMeetingData, setScheduleedMeetingData] = useState(null);
+  const [ldstate, setLoadingstate] = useState(false);
 
   const createMeeting = async (e) => {
+    setLoadingstate(true);
     e.preventDefault();
 
     const response = await fetch("/api/google-meet", {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({}),
     });
 
     if (!response.ok) {
@@ -37,178 +24,159 @@ const GoogleMeet = () => {
     }
 
     const data = await response.json();
-    console.log("Meeting Details:", data);
     setMeetingData(data);
-    // return data;
+    setLoadingstate(false);
   };
 
-  const scheduledMeeting = async (formData) => {
-    console.log("formData", formData);
-
-    // const response = await fetch("/api/google-meet", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(formData),
-    // });
-
-    // if (!response.ok) {
-    //   throw new Error("Failed to create meeting");
-    // }
-
-    // const data = await response.json();
-    // console.log("Meeting Details:", data);
-    // setMeetingData(data);
-  };
-
-  const minDateValue = new Date(new Date().setDate(new Date().getDate()));
 
   return (
     <div className="pt-10 flex flex-col gap-5">
-      <p>GoogleMeet</p>
-      <p>Do Instant Meeting</p>
-      <button
-        onClick={async (e) => {
-          createMeeting(e);
-        }}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-fit cursor-pointer hover:bg-blue-600 transition duration-200 ease-in-out"
-      >
-        Start an instant Meeting
-      </button>
+      <p className=" text-2xl font-bold">GoogleMeet</p>
+      <div className="grid grid-cols-2 ">
+        <div className="flex flex-col gap-5">
+          <p>Do Instant Meeting</p>
+          <button
+            onClick={async (e) => {
+              createMeeting(e);
+            }}
+            className={`bg-blue-500 text-white px-4 py-2 rounded w-fit cursor-pointer hover:bg-blue-600 transition duration-200 ease-in-out flex gap-2 ${
+              ldstate ? "opacity-50 cursor-not-allowed" : ""
+            }`}          >
+            Start an instant Meeting
+            {ldstate && <Spinner />}
+          </button>
 
-      {meetingData && (
-        <div className="bg-gray-100 p-4 rounded">
-          <h2 className="text-lg font-bold">Meeting Details</h2>
-          <p>Meeting ID: {meetingData.id}</p>
-          <p>Meeting URL: {meetingData.hangoutLink}</p>
+          {meetingData && (
+            <div className="bg-gray-100 p-4 rounded">
+              <h2 className="text-lg font-bold">Meeting Details</h2>
+              <p>Meeting ID: {meetingData.id}</p>
+              <p>
+                Meeting URL:{" "}
+                <Link href={meetingData.hangoutLink}>
+                  {meetingData.hangoutLink}
+                </Link>
+              </p>
+            </div>
+          )}
         </div>
-      )}
-
-      {/* <form onSubmit={handleSubmit(scheduledMeeting)}>
-        <section className="flex gap-8">
-          <div className="w-max">
-            <h2 className="font-semibold text-lg">
-              Data Entry Start Date <span className="text-error">*</span>
-            </h2>
-            <Controller
-              control={control}
-              name="date"
-              render={({ field: { onChange, value } }) => (
-                <CustomDatePicker
-                  onChange={onChange}
-                  value={value}
-                  showLabel={false}
-                  isDisabled={false}
-                  minValue={minDateValue}
-                  allowFutureDates
-                />
-              )}
-            />
-          </div>
-          <div className="w-max">
-            <h2 className="font-semibold text-lg">
-              Billing Start Time <span className="text-error">*</span>
-            </h2>
-            <Controller
-              control={control}
-              name="time"
-              render={({ field: { onChange, value } }) => (
-                <CustomTimeField
-                  onChange={onChange}
-                  value={value || new Date()}
-                  // isDisabled={false}
-                  allowFutureTimes
-                  hideLabel
-                />
-              )}
-            />
-          </div>
-        </section>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded w-fit cursor-pointer hover:bg-blue-600 transition duration-200 ease-in-out"
-        >
-          Submit
-        </button>
-      </form> */}
-      {/* <form className=" w-fit">
-        <DateTime setMyDate={setMyDate} />
-      </form> */}
-      <Dt />
+        <div>
+          <Dt
+            setSchedule={setScheduleedMeetingData}
+            scheduledMeetingData={scheduleedMeetingData}
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
 export default GoogleMeet;
 
-// type ValuePiece = Date | null;
-
-// type Value = ValuePiece | [ValuePiece, ValuePiece];
-
-// function DateTime({ setMyDate }) {
-//   const [value, onChange] = useState<Value>(new Date());
-//   console.log("new value", value);
-//   console.log("new onChange ", onChange);
-
-//   return (
-//     <DateTimePicker
-//       onChange={(e) => setMyDate(e)}
-//       value={value}
-//       minDate={new Date()}
-//     />
-//   );
-// }
-
-function Dt() {
+function Dt({ setSchedule, scheduledMeetingData }) {
   const [selectedDateTime, setSelectedDateTime] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
-    console.log(`Selected Date & Time: ${selectedDateTime}`);
+    const formData = {
+      startdateTime: selectedDateTime,
+      endDateTime: endDateTime,
+    };
 
+    const response = await fetch("/api/google-meet", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create meeting");
+    }
+
+    const data = await response.json();
+    console.log("Scheduled Meeting Data:", data);
+    setSchedule(data);
+    setLoading(false);
   };
-  const scheduledMeeting = async (formData) => {
-    console.log("formData", formData);
-
-    // const response = await fetch("/api/google-meet", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(formData),
-    // });
-
-    // if (!response.ok) {
-    //   throw new Error("Failed to create meeting");
-    // }
-
-    // const data = await response.json();
-    // console.log("Meeting Details:", data);
-    // setMeetingData(data);
-  };
-
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Select Date & Time</h2>
+    <div>
       <form onSubmit={handleSubmit}>
-        <input
-          type="datetime-local"
-          value={selectedDateTime}
-          onChange={(e) => setSelectedDateTime(e.target.value)}
-          required
-        />
+        <div className=" flex gap-10">
+          <div>
+            <h2>Select start Date & Time</h2>
+            <input
+              type="datetime-local"
+              value={selectedDateTime}
+              onChange={(e) => setSelectedDateTime(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <h2>Select end Date & Time</h2>
+            <input
+              type="datetime-local"
+              value={endDateTime}
+              onChange={(e) => setEndDateTime(e.target.value)}
+              required
+            />
+          </div>
+        </div>
         <br />
         <br />
-        <button type="submit">Submit</button>
+        <button
+          type="submit"
+          className={`bg-blue-500 text-white px-4 py-2 rounded w-fit cursor-pointer hover:bg-blue-600 transition duration-200 ease-in-out flex gap-2 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          Schedule a meeting
+          {loading && <Spinner />}
+        </button>
       </form>
 
-      {selectedDateTime && (
-        <p>
-          Selected Date & Time: <strong>{selectedDateTime}</strong>
-        </p>
+      {scheduledMeetingData && (
+        <div className="bg-gray-100 p-4 rounded">
+          <h2 className="text-lg font-bold">Meeting Details</h2>
+          <p>Meeting ID: {scheduledMeetingData.id}</p>
+          <p>
+            Meeting URL:{" "}
+            <Link href={scheduledMeetingData.hangoutLink}>
+              {scheduledMeetingData.hangoutLink}
+            </Link>
+          </p>
+          {/* <p>Start Time: {scheduledMeetingData.start}</p>
+          <p>Start Time: {scheduledMeetingData.end}</p> */}
+        </div>
       )}
     </div>
   );
 }
+
+const Spinner = () => {
+  return (
+    <div role="status">
+      <svg
+        aria-hidden="true"
+        className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+        viewBox="0 0 100 101"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+          fill="currentColor"
+        />
+        <path
+          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+          fill="currentFill"
+        />
+      </svg>
+      <span className="sr-only">Loading...</span>
+    </div>
+  );
+};
