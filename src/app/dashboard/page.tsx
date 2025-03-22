@@ -1,4 +1,3 @@
-// import { auth, useSession } from "@/utils/auth";
 import GoogleMeet from "@/components/GoogleMeet";
 import Logout from "@/components/Logout";
 import { getServerSession } from "next-auth";
@@ -16,14 +15,15 @@ interface SessionDetails {
 
 const page = async () => {
   const serverSideSession: SessionDetails = await getServerSession();
-  console.log("Server Side Session:", serverSideSession?.user);
-  // if (!serverSideSession.user) {
-  //   redirect("/");
-  // }
+
+  if(!serverSideSession?.user) {
+    redirect("/");
+  }
+
 
   return (
-    <div className=" p-5">
-      <div className="flex justify-between items-start">
+    <div className=" ">
+      {/* <div className="flex justify-between items-start">
         <div className=" flex flex-col gap-2">
           <p>Name: {serverSideSession?.user?.name}</p>
           <p>Email: {serverSideSession?.user?.email}</p>
@@ -36,7 +36,7 @@ const page = async () => {
           />
         </div>
         <Logout />
-      </div>
+      </div> */}
       <GoogleMeet/>
     </div>
   );
